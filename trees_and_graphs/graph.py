@@ -1,124 +1,123 @@
-from queue import Queue
+from collections import deque
 
 
-# Adjacency List
+# Adjaceny List
+class Graph_Adj_List:
+    def __init__(self):
+        self.graph = {}
 
-
-class Node:
-    def __init__(self, data) -> None:
-        self.data = data
-        self.neighbours: list[Node] = []
-
-
-class GraphList:
-    def __init__(self) -> None:
-        self.nodes: list[Node] = []
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = []
+        self.graph[u].append(v)
+        # undirected graph
+        # if v not in self.graph:
+        #     self.graph[v] = []
+        # self.graph[v].append(u)
 
     def print_graph(self):
-        [
-            print(f"{node.data}: {[neighbour.data for neighbour in node.neighbours]}")
-            for node in self.nodes
-        ]
+        for vertex in self.graph:
+            # print(f"{vertex}->{'->'.join(map(str, self.graph[vertex]))}")
+            print(f"{vertex}: {self.graph[vertex]}")
+
+    def bfs(self, start):
+        visited = set()
+        q = deque([start])
+        while q:
+            vertex = q.popleft()
+            if vertex not in visited:
+                visited.add(vertex)
+                print(vertex, end="->")
+                if vertex in self.graph:
+                    q.extend(self.graph[vertex])
+
+    def dfs(self, start):
+        visited = set()
+        self.dfs_helper(start, visited)
+
+    def dfs_helper(self, vertex, visited):
+        print(vertex, end="->")
+        visited.add(vertex)
+        if vertex in self.graph:
+            for neighbour in self.graph[vertex]:
+                if neighbour not in visited:
+                    self.dfs_helper(neighbour, visited)
 
 
-def dfs(root: Node, visited: set[Node] = set()):
-    if not root:
-        return
-
-    visited.add(root)
-    print(root.data, end=" ")
-
-    [
-        dfs(neighbour, visited)
-        for neighbour in root.neighbours
-        if neighbour not in visited
-    ]
-
-
-def bfs(root: Node):
-    if not root:
-        return
-
-    q: Queue[Node] = Queue()
-    visited: set[Node] = set()
-    q.put(root)
-
-    while not q.empty():
-        node = q.get()
-        if node not in visited:
-            visited.add(node)
-            print(node.data, end=" ")
-            [
-                q.put(neighbour)
-                for neighbour in node.neighbours
-                if neighbour not in visited
-            ]
-
-
-# Adjacency Matrix
-
-
-class GraphMatrix:
+class Graph_Adj_Matrix:
     def __init__(self, vertices):
         self.vertices = vertices
-        self.adj_matrix = [[0] * vertices for _ in range(vertices)]
+        self.matrix = [[0] * vertices for _ in range(vertices)]
 
-    def add_edge(self, start, end):
-        if start >= 0 and end >= 0 and start < self.vertices and end < self.vertices:
-            self.adj_matrix[start][end] = 1
-            self.adj_matrix[end][start] = 1  # Undirected graph
+    def add_edge(self, u, v):
+        if u >= 0 and u < self.vertices and v >= 0 and v < self.vertices:
+            self.matrix[u][v] = 1
+        #  undirected graph
+        #  self.matrix[v][u] = 1
 
     def print_graph(self):
-        for row in self.adj_matrix:
-            print(" ".join(map(str, row)))
+        print(end="  ")
+        for i in range(self.vertices):
+            print(i, end=" ")
+        print()
+        for i in range(self.vertices):
+            print(i, end=" ")
+            for j in range(self.vertices):
+                print(self.matrix[i][j], end=" ")
+            print()
+
+    def bfs(self, start):
+        visited = set()
+        q = deque([start])
+
+        while q:
+            vertex = q.popleft()
+            if vertex not in visited:
+                print(vertex, end="->")
+                visited.add(vertex)
+                for neighbour, connected in enumerate(self.matrix[vertex]):
+                    if connected and neighbour not in visited:
+                        q.append(neighbour)
+
+    def dfs(self, start):
+        visited = set()
+        self.dfs_helper(start, visited)
+
+    def dfs_helper(self, vertex, visited):
+        print(vertex, end="->")
+        visited.add(vertex)
+        for neighbour, connected in enumerate(self.matrix[vertex]):
+            if connected and neighbour not in visited:
+                self.dfs_helper(neighbour, visited)
 
 
 def main():
-    graph_list = GraphList()
 
-    # Create nodes
-    node_0 = Node(0)
-    node_1 = Node(1)
-    node_2 = Node(2)
-    node_3 = Node(3)
-    node_4 = Node(4)
-    node_5 = Node(5)
+    graph = Graph_Adj_List()
+    graph.add_edge(0, 1)
+    graph.add_edge(0, 2)
+    graph.add_edge(1, 3)
+    graph.add_edge(2, 4)
+    graph.add_edge(2, 5)
+    print("\nAdjacency List: \n")
+    graph.print_graph()
+    print("\nBFS: ", end="")
+    graph.bfs(0)
+    print("\n\nDFS: ", end="")
+    graph.dfs(0)
 
-    # Add edges (connections between nodes)
-    node_0.neighbours.append(node_1)
-    node_0.neighbours.append(node_4)
-    node_0.neighbours.append(node_5)
-    node_1.neighbours.append(node_3)
-    node_1.neighbours.append(node_4)
-    node_2.neighbours.append(node_1)
-    node_3.neighbours.append(node_2)
-    node_3.neighbours.append(node_4)
-
-    # Add nodes to the graph
-    graph_list.nodes.append(node_0)
-    graph_list.nodes.append(node_1)
-    graph_list.nodes.append(node_2)
-    graph_list.nodes.append(node_3)
-
-    # graph_list.print_graph()
-
-    print("DFS: ", end=" ")
-    dfs(graph_list.nodes[0])
-    print()
-    print("BFS: ", end=" ")
-    bfs(graph_list.nodes[0])
-
-    # graph_matrix = GraphMatrix(5)
-
-    # graph_matrix.add_edge(0, 1)
-    # graph_matrix.add_edge(0, 4)
-    # graph_matrix.add_edge(1, 2)
-    # graph_matrix.add_edge(1, 3)
-    # graph_matrix.add_edge(1, 4)
-    # graph_matrix.add_edge(2, 3)
-    # graph_matrix.add_edge(3, 4)
-
-    # graph_matrix.print_graph()
+    graph = Graph_Adj_Matrix(6)
+    graph.add_edge(0, 1)
+    graph.add_edge(0, 2)
+    graph.add_edge(1, 3)
+    graph.add_edge(2, 4)
+    graph.add_edge(2, 5)
+    print("\n\nAdjacency Matrix: \n")
+    graph.print_graph()
+    print("\nBFS: ", end="")
+    graph.bfs(0)
+    print("\n\nDFS: ", end="")
+    graph.dfs(0)
 
 
 if __name__ == "__main__":
