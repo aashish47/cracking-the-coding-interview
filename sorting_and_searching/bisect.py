@@ -1,24 +1,22 @@
 def bisect_left(arr, target):
-    # right is length not length -1 because an element will be inserted increasing the len
-    left, right = 0, len(arr)
-    # left <= right will lead to infinite loop
-    while left < right:
+    left, right = 0, len(arr) - 1
+    while left <= right:
         mid = (left + right) // 2
         if target > arr[mid]:  # only differene from bisect_right
             left = mid + 1
         else:
-            right = mid
+            right = mid - 1
     return left
 
 
 def bisect_right(arr, target):
-    left, right = 0, len(arr)
-    while left < right:
+    left, right = 0, len(arr) - 1
+    while left <= right:
         mid = (left + right) // 2
-        if target >= arr[mid]:  # difference from bisect_left
+        if target >= arr[mid]:  # only difference from bisect_left
             left = mid + 1
         else:
-            right = mid
+            right = mid - 1
     return left
 
 
