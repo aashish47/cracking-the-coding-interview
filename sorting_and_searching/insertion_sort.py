@@ -1,14 +1,10 @@
 def insertion_sort(a: list[int]):
-    sorted_array = 0
-    while sorted_array < len(a) - 1:
-        j = sorted_array + 1
-        key = a[j]
-        j = j - 1
-        while j >= 0 and key < a[j]:
-            a[j + 1] = a[j]
-            j -= 1
-        a[j + 1] = key
-        sorted_array += 1
+    for i in range(1, len(a)):
+        for j in range(i, 0, -1):
+            if a[j] >= a[j - 1]:
+                break
+            else:
+                a[j], a[j - 1] = a[j - 1], a[j]
 
 
 def main():

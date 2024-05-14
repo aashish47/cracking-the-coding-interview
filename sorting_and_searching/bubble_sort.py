@@ -1,12 +1,8 @@
 def bubble_sort(a: list[int]):
-    i = 0
-    while i < len(a):
-        j = 0
-        while j < len(a) - 1 - i:
+    for i in range(len(a)):
+        for j in range(len(a) - 1 - i):
             if a[j] > a[j + 1]:
                 a[j], a[j + 1] = a[j + 1], a[j]
-            j += 1
-        i += 1
 
 
 def main():

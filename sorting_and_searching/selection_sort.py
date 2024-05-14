@@ -1,22 +1,10 @@
-def swap(a, b):
-    a = a ^ b
-    b = a ^ b
-    a = a ^ b
-    return a, b
-
-
 def selection_sort(a: list[int]):
-    i = 0
-    while i < len(a):
-        j = i + 1
-        min = i
-        while j < len(a):
-            if a[j] < a[min]:
-                min = j
-            j += 1
-        if min != i:
-            a[i], a[min] = a[min], a[i]
-        i += 1
+    for i in range(len(a) - 1):
+        minimum = i
+        for j in range(i + 1, len(a)):
+            if a[j] < a[minimum]:
+                minimum = j
+        a[i], a[minimum] = a[minimum], a[i]
 
 
 def main():
