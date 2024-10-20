@@ -1,74 +1,70 @@
-import random
-
-
 class MinHeap:
-    def __init__(self) -> None:
+    def __init__(self):
         self.heap = []
 
-    def insert(self, data):
-        self.heap.append(data)
-        if len(self.heap) > 1:
-            self.bubble_up(len(self.heap) - 1)
+    def parent(self, index):
+        return (index - 1) // 2
 
-    def extract_min(self):
+    def left_child(self, index):
+        return 2 * index + 1
+
+    def right_child(self, index):
+        return 2 * index + 2
+
+    def insert(self, value):
+        self.heap.append(value)
+        self._heapify_up(len(self.heap) - 1)
+
+    def _heapify_up(self, index):
+        while index > 0 and self.heap[self.parent(index)] > self.heap[index]:
+            self.heap[index], self.heap[self.parent(index)] = self.heap[self.parent(index)], self.heap[index]
+            index = self.parent(index)
+
+    def remove_min(self):
         if len(self.heap) == 0:
-            return "heap is empty !!"
-
+            return None
         if len(self.heap) == 1:
             return self.heap.pop()
 
-        min = self.heap[0]
+        root = self.heap[0]
         self.heap[0] = self.heap.pop()
+        self._heapify_down(0)
+        return root
 
-        if len(self.heap) > 1:
-            self.bubble_down(0)
-
-        return min
-
-    def bubble_up(self, index):
-        parent_index = (index - 1) // 2
-        # for max heap: self.heap[parent_index] < self.heap[index]
-        while parent_index >= 0 and self.heap[parent_index] > self.heap[index]:
-            self.heap[parent_index], self.heap[index] = (
-                self.heap[index],
-                self.heap[parent_index],
-            )
-            index = parent_index
-            parent_index = (index - 1) // 2
-
-    def bubble_down(self, index):
-        left_child_index = 2 * index + 1
-        right_child_index = 2 * index + 2
-
+    def _heapify_down(self, index):
         smallest = index
+        left = self.left_child(index)
+        right = self.right_child(index)
 
-        # for max heap: self.heap[left_child_index] > self.heap[smallest]
-        if (
-            len(self.heap) > left_child_index
-            and self.heap[left_child_index] < self.heap[smallest]
-        ):
-            smallest = left_child_index
+        if left < len(self.heap) and self.heap[left] < self.heap[smallest]:
+            smallest = left
+        if right < len(self.heap) and self.heap[right] < self.heap[smallest]:
+            smallest = right
 
-        # for max heap: self.heap[right_child_index] > self.heap[smallest]
-        if (
-            len(self.heap) > right_child_index
-            and self.heap[right_child_index] < self.heap[smallest]
-        ):
-            smallest = right_child_index
+        if smallest != index:
+            self.heap[index], self.heap[smallest] = self.heap[smallest], self.heap[index]
+            self._heapify_down(smallest)
 
-        if index != smallest:
-            self.heap[smallest], self.heap[index] = (
-                self.heap[index],
-                self.heap[smallest],
-            )
-            self.bubble_down(smallest)
+    def get_min(self):
+        if self.heap:
+            return self.heap[0]
+        return None
 
+    def is_empty(self):
+        return len(self.heap) == 0
 
-def main():
-    min_heap = MinHeap()
-    [min_heap.insert(random.randint(0, 50)) for _ in range(20)]
-    [print(min_heap.extract_min(), end=" ") for _ in range(21)]
+    def size(self):
+        return len(self.heap)
 
+# Example usage
+min_heap = MinHeap()
+min_heap.insert(3)
+min_heap.insert(1)
+min_heap.insert(6)
+min_heap.insert(5)
+min_heap.insert(2)
+min_heap.insert(4)
 
-if __name__ == "__main__":
-    main()
+print("Minimum:", min_heap.get_min())  # Outputs: Minimum: 1
+print("Removed Minimum:", min_heap.remove_min())  # Outputs: Removed Minimum: 1
+print("New Minimum:", min_heap.get_min())  # Outputs: New Minimum: 2
